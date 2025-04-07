@@ -52,19 +52,19 @@ const CHALLENGES = {
       question: "¿Qué actividad NO corresponde a Producción?",
       options: ["Control de calidad", "Diseño publicitario", "Gestión de materias primas"],
       correct: 1,
-      explanation: "El diseño publicitario es parte de Mercadeo, no de la función de Producción."
+      explanation: "El diseño publicitario pertenece a la función de Mercadeo, ya que su objetivo es promocionar productos o servicios. En cambio, Producción se enfoca en la transformación de insumos en bienes o servicios, incluyendo actividades como la gestión de insumos y control de calidad."
     },
     {
       question: "¿Qué estructura organizacional favorece la eficiencia en producción?",
       options: ["Matricial", "Por procesos", "Funcional"],
       correct: 1,
-      explanation: "La estructura por procesos optimiza el flujo productivo evitando silos departamentales."
+      explanation: "La estructura por procesos organiza el trabajo según el flujo productivo, lo cual mejora la eficiencia y reduce demoras causadas por silos funcionales. Es ideal para operaciones donde se busca mejorar continuamente la producción."
     },
     {
       question: "El sistema Just-In-Time está más relacionado con:",
       options: ["Estructura vertical", "Estructura flexible", "Estructura centralizada"],
       correct: 1,
-      explanation: "El JIT requiere estructuras flexibles para responder ágilmente a la demanda."
+      explanation: "El Just-In-Time busca reducir inventarios y producir justo cuando se necesita. Para que funcione correctamente, la organización debe ser flexible y capaz de responder rápidamente a cambios, lo cual no es posible en estructuras rígidas o centralizadas."
     }
   ],
   MERCADEO: [
@@ -72,19 +72,19 @@ const CHALLENGES = {
       question: "Para mercados internacionales, ¿qué estructura es mejor?",
       options: ["Funcional", "Geográfica", "Por producto"],
       correct: 1,
-      explanation: "La estructura geográfica permite mejor adaptación a mercados regionales."
+      explanation: "La estructura geográfica permite adaptar estrategias de mercadeo, precios y productos a contextos culturales y legales locales. Esto mejora la efectividad comercial en entornos internacionales."
     },
     {
       question: "¿Qué tipo de organización facilita el desarrollo de nuevos productos?",
       options: ["Burocrática", "Por proyectos", "Jerárquica tradicional"],
       correct: 1,
-      explanation: "La estructura por proyectos permite equipos multidisciplinarios enfocados en innovación."
+      explanation: "La estructura por proyectos reúne equipos multidisciplinarios con autonomía para innovar, lo cual es clave para el desarrollo de nuevos productos. Las estructuras tradicionales, al ser más rígidas, limitan la innovación."
     },
     {
       question: "¿Qué enfoque organizacional requiere Mercadeo Digital?",
       options: ["Centralizado", "Ágil", "Mecanicista"],
       correct: 1,
-      explanation: "El enfoque ágil permite adaptarse rápidamente a cambios en tendencias digitales."
+      explanation: "El Mercadeo Digital necesita reaccionar a tendencias cambiantes y feedback inmediato del mercado. Por ello, se beneficia de estructuras ágiles que promueven iteraciones rápidas y decisiones descentralizadas."
     }
   ],
   FINANZAS: [
@@ -92,19 +92,19 @@ const CHALLENGES = {
       question: "¿Qué facilita el control financiero descentralizado?",
       options: ["Estructura centralizada", "Estructura divisional", "Estructura plana"],
       correct: 1,
-      explanation: "La estructura divisional permite autonomía con estándares compartidos."
+      explanation: "La estructura divisional otorga autonomía financiera a cada unidad o división, lo que permite un control más específico y adaptado a cada área. Esta descentralización aumenta la responsabilidad y el seguimiento por resultados."
     },
     {
       question: "¿Qué estructura permite mejor asignación de recursos?",
       options: ["Burocrática", "Matricial", "Funcional simple"],
       correct: 1,
-      explanation: "La estructura matricial permite balancear necesidades transversales y departamentales."
+      explanation: "La estructura matricial combina enfoques funcionales y por proyectos, facilitando una asignación eficiente de recursos humanos y financieros según las prioridades estratégicas de la organización."
     },
     {
       question: "¿Qué impacto tiene la estructura horizontal en costos financieros?",
       options: ["Mayor overhead", "Menores costos administrativos", "No tiene impacto"],
       correct: 1,
-      explanation: "Las estructuras horizontales reducen capas de gestión y costos administrativos."
+      explanation: "Las estructuras horizontales eliminan niveles jerárquicos intermedios, reduciendo salarios gerenciales y agilizando procesos. Esto disminuye los costos administrativos y mejora la eficiencia operativa."
     }
   ],
   RRHH: [
@@ -112,19 +112,19 @@ const CHALLENGES = {
       question: "¿Qué modelo favorece el desarrollo profesional?",
       options: ["Jerárquico tradicional", "Por proyectos con rotación", "Centralizado"],
       correct: 1,
-      explanation: "La rotación en proyectos desarrolla diversas habilidades y competencias."
+      explanation: "Los modelos por proyectos con rotación permiten que el personal adquiera diversas habilidades, al enfrentarse a distintos roles y desafíos. Esto enriquece la carrera profesional y fomenta el aprendizaje continuo."
     },
     {
       question: "¿Qué tipo de estructura facilita la retención de talento?",
       options: ["Piramidal rígida", "Organización que aprende", "Burocrática"],
       correct: 1,
-      explanation: "Las organizaciones que aprenden fomentan el crecimiento y satisfacción profesional."
+      explanation: "Las organizaciones que aprenden promueven el crecimiento del personal, la participación y el aprendizaje constante. Estas características generan mayor satisfacción y compromiso, facilitando la retención del talento."
     },
     {
       question: "La gestión del conocimiento se potencia mejor en estructuras:",
       options: ["Verticales", "Colaborativas en red", "Silos departamentales"],
       correct: 1,
-      explanation: "Las redes colaborativas facilitan el intercambio de conocimiento transversal."
+      explanation: "Las estructuras colaborativas favorecen el flujo libre de información entre departamentos. Esto es clave para una buena gestión del conocimiento, la innovación y la mejora continua."
     }
   ],
   ADMIN: [
@@ -132,19 +132,19 @@ const CHALLENGES = {
       question: "¿Qué enfoque requiere estructura flexible?",
       options: ["Burocrático", "Gestión por procesos", "Científico"],
       correct: 1,
-      explanation: "La gestión por procesos necesita flexibilidad entre departamentos."
+      explanation: "La gestión por procesos implica coordinación entre diferentes áreas, lo que requiere estructuras ágiles y flexibles que rompan con las barreras funcionales tradicionales."
     },
     {
       question: "¿Qué tipo de autoridad predomina en estructuras matriciales?",
       options: ["Lineal", "Dual", "Centralizada"],
       correct: 1,
-      explanation: "En matrices existe autoridad dual: funcional y de proyecto."
+      explanation: "La estructura matricial se caracteriza por una doble autoridad: la funcional (por departamentos) y la de proyectos. Esto permite una visión transversal y más integral de la gestión administrativa."
     },
     {
       question: "¿Qué estructura facilita mejor la toma de decisiones rápidas?",
       options: ["Comités múltiples", "Descentralizada", "Jerárquica tradicional"],
       correct: 1,
-      explanation: "Las estructuras descentralizadas permiten decisiones autónomas más ágiles."
+      explanation: "Las estructuras descentralizadas permiten que las decisiones se tomen más cerca del lugar donde ocurren los problemas, reduciendo tiempos de espera y aumentando la adaptabilidad."
     }
   ],
   COSTOS_ORG: [
@@ -152,19 +152,19 @@ const CHALLENGES = {
       question: "¿Qué estructura tiene menores costos administrativos?",
       options: ["Jerárquica", "Matricial", "Plana"],
       correct: 2,
-      explanation: "Las estructuras planas reducen mandos medios y overhead administrativo."
+      explanation: "Las estructuras planas tienen menos niveles jerárquicos, lo que reduce costos asociados a mandos intermedios y mejora la comunicación interna."
     },
     {
       question: "¿Qué enfoque genera mayores costos de coordinación?",
       options: ["Centralizado", "Descentralizado", "Híbrido"],
       correct: 1,
-      explanation: "La descentralización aumenta costos de coordinación aunque reduce otros costos."
+      explanation: "En estructuras descentralizadas, cada unidad toma decisiones, lo que requiere mayor coordinación entre áreas para asegurar coherencia estratégica, generando así costos adicionales."
     },
     {
       question: "¿Qué impacto tiene la cultura organizacional en los costos?",
       options: ["No afecta", "Impacto indirecto", "Impacto directo significativo"],
       correct: 2,
-      explanation: "La cultura afecta directamente productividad, rotación y costos operativos."
+      explanation: "Una cultura organizacional positiva promueve la productividad, reduce la rotación del personal y mejora la eficiencia, lo que tiene un impacto directo en la reducción de costos operativos."
     }
   ],
   COSTOS_PROC: [
@@ -172,19 +172,19 @@ const CHALLENGES = {
       question: "¿Qué mejora la relación costo-eficiencia en procesos?",
       options: ["Mayor control", "Automatización", "Más supervisión"],
       correct: 1,
-      explanation: "La automatización reduce errores y optimiza recursos en procedimientos administrativos."
+      explanation: "La automatización reduce errores humanos, mejora la velocidad y elimina tareas repetitivas, mejorando la eficiencia de los procedimientos y reduciendo costos operativos."
     },
     {
       question: "¿Qué estructura facilita la reingeniería de procesos?",
       options: ["Jerárquica tradicional", "Horizontal por procesos", "Vertical funcional"],
       correct: 1,
-      explanation: "Las estructuras horizontales están orientadas a los procesos, no a las funciones."
+      explanation: "Las estructuras horizontales, centradas en los procesos más que en funciones, facilitan la identificación de mejoras y la transformación radical de procedimientos administrativos."
     },
     {
       question: "¿Qué factor aumenta los costos de transacción internos?",
       options: ["Colaboración directa", "Sistemas integrados", "Procedimientos burocráticos"],
       correct: 2,
-      explanation: "La burocracia incrementa pasos y aprobaciones, aumentando costos transaccionales."
+      explanation: "Los procedimientos burocráticos suelen implicar más papeleo, pasos innecesarios y aprobaciones redundantes, lo que genera demoras y eleva los costos de transacción dentro de la organización."
     }
   ],
   ESTRUCTURA: [
@@ -192,22 +192,23 @@ const CHALLENGES = {
       question: "¿Qué estructura es más adecuada para entornos dinámicos?",
       options: ["Mecanicista", "Orgánica", "Funcional rígida"],
       correct: 1,
-      explanation: "Las estructuras orgánicas son flexibles y adaptables al cambio constante."
+      explanation: "Las estructuras orgánicas son flexibles, con menos jerarquías, y fomentan la adaptabilidad. Son ideales para contextos donde el entorno cambia constantemente y se necesita rápida respuesta."
     },
     {
       question: "¿Qué determina principalmente la estructura organizacional?",
       options: ["Número de empleados", "Estrategia organizacional", "Presupuesto disponible"],
       correct: 1,
-      explanation: "La estructura debe alinearse con la estrategia para apoyar los objetivos."
+      explanation: "La estructura debe ser coherente con la estrategia de la organización. Por ejemplo, si la estrategia prioriza innovación, se requerirá una estructura más flexible y colaborativa."
     },
     {
       question: "¿Qué enfoque facilita la innovación organizacional?",
       options: ["Adhocracias flexibles", "Burocracia profesional", "Estructura divisional"],
       correct: 0,
-      explanation: "Las adhocracias permiten equipos fluidos y experimentación para innovar."
+      explanation: "Las adhocracias permiten equipos fluidos, con roles cambiantes y sin jerarquías rígidas. Este enfoque es ideal para la creatividad, experimentación e innovación constante."
     }
   ]
 };
+
 
 // Generador de laberinto mejorado - más grande y con más elementos
 const generateMaze = (difficulty = 'normal') => {
