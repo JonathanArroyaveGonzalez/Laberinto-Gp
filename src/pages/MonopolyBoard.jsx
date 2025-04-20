@@ -356,7 +356,6 @@ export default function LaberintoCorporativo() {
   const [gameOver, setGameOver] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
   const [paused, setPaused] = useState(false);
-  const [currentLevel, setCurrentLevel] = useState(1);
   const [knowledgeBase, setKnowledgeBase] = useState({});
   const [hints, setHints] = useState(3);
   const [explored, setExplored] = useState(new Set(["0-0"]));
@@ -810,32 +809,19 @@ useEffect(() => {
   };
 
   const handleWin = () => {
-    const timeBonus = gameState.time * 5;
-    const topicsBonus = Object.keys(gameState.visitedTopics).length * 100;
-    
+    const topicsBonus = Object.keys(gameState.visitedTopics).length * 0.5;
+    const timeBonus = (gameState.time / 180) * 0.5; // Proporcional al tiempo restante
+
     setGameState(prev => ({
       ...prev,
-      score: prev.score + timeBonus + topicsBonus
+      score: Math.min(5.0, topicsBonus + timeBonus) // Limitar el puntaje máximo a 5.0
     }));
-    
+
     setWin(true);
-    
-    if (currentLevel < 3) {
-      setTimeout(() => {
-        setCurrentLevel(prev => prev + 1);
-        if (difficulty === 'easy') {
-          setDifficulty('normal');
-        } else if (difficulty === 'normal') {
-          setDifficulty('hard');
-        }
-      }, 5000);
-    }
   };
 
   const resetGame = () => {
     startNewGame();
-    setCurrentLevel(1);
-    setDifficulty('normal');
     setKnowledgeBase({});
   };
   
@@ -895,7 +881,7 @@ useEffect(() => {
         
         <div className="flex justify-between items-center mt-2">
           <div className="text-lg font-semibold text-blue-600">
-            Nivel: {currentLevel} | Puntos: {gameState.score}
+            Puntos: {gameState.score}
           </div>
           <div className="flex items-center space-x-4">
             <div className="text-red-500 font-bold">
@@ -992,7 +978,8 @@ useEffect(() => {
           <div className="mt-6">
             <h3 className="font-semibold mb-2">Controles:</h3>
             <ul className="text-sm space-y-1">
-              <li>🔼🔽◀️▶️ - Movimiento</li>
+              <li>Movimientos</li>
+              <li>🔼🔽◀️▶️ </li>
               <li>P - Pausa</li>
               <li>H - Ayuda</li>
             </ul>
@@ -1153,10 +1140,11 @@ useEffect(() => {
               <div>
                 <h3 className="text-lg font-semibold">Sistema de puntuación</h3>
                 <ul className="list-disc pl-5 space-y-1">
-                  <li><strong>Respuesta correcta:</strong> +100 puntos +15 segundos</li>
-                  <li><strong>Recurso bonus:</strong> +50 a +150 puntos (y otros beneficios)</li>
-                  <li><strong>Tiempo restante:</strong> Multiplicado por 5 al final</li>
-                  <li><strong>Departamentos visitados:</strong> +100 puntos cada uno</li>
+                  <li><strong>Respuesta correcta:</strong> Incrementa tu puntuación proporcionalmente, acercándote al máximo de 5.0</li>
+                  <li><strong>Recurso bonus:</strong> Mejora tu puntuación y otorga beneficios adicionales como tiempo extra o vidas</li>
+                  <li><strong>Tiempo restante:</strong> Contribuye al puntaje final, siendo proporcional al tiempo que quede al finalizar</li>
+                  <li><strong>Departamentos visitados:</strong> Cada departamento completado aumenta tu puntuación, siendo necesario completar al menos el 75% para ganar</li>
+                  <li><strong>Puntaje máximo:</strong> La puntuación final se calcula en una escala de 1.0 a 5.0, considerando todos los factores anteriores</li>
                 </ul>
               </div>
               
@@ -1177,19 +1165,8 @@ useEffect(() => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4 text-center">
             <h2 className="text-3xl font-bold text-green-600 mb-4">¡Felicidades!</h2>
-            <p className="text-xl mb-2">Has completado el nivel {currentLevel}</p>
+            <p className="text-xl mb-2">Has completado el juego</p>
             <p className="mb-4">Puntuación final: {gameState.score} puntos</p>
-            
-            {currentLevel < 3 ? (
-              <>
-                <p className="mb-4">Preparando nivel {currentLevel + 1}...</p>
-                <div className="animate-pulse">
-                  <p>Dificultad aumentada: {difficulty === 'normal' ? 'Normal' : 'Difícil'}</p>
-                </div>
-              </>
-            ) : (
-              <p className="mb-4">¡Has completado todos los niveles!</p>
-            )}
             
             <button
               onClick={resetGame}

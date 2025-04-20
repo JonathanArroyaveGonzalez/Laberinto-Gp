@@ -25,7 +25,7 @@ const ModoAprendizajeExploratorio = () => {
               description: "Emplea una estructura divisional por regiones geográficas y líneas de productos."
             }
           ],
-          relationships: ["PRODUCCION.PROCESOS", "FINANZAS.AREAS"],
+          relationships: ["PRODUCCION.PROCESOS", "FINANZAS.AREAS", "RRHH.DESARROLLO"],
           decisionTree: {
             question: "¿Qué estructura es más adecuada para mi organización?",
             factors: [
@@ -33,6 +33,49 @@ const ModoAprendizajeExploratorio = () => {
               "Diversidad de productos/servicios",
               "Necesidad de especialización",
               "Velocidad de toma de decisiones requerida"
+            ]
+          }
+        },
+        INNOVACION: {
+          title: "Estructura e Innovación",
+          content: [
+            "Adhocracias flexibles favorecen la creatividad y experimentación",
+            "Estructuras orgánicas son mejores para entornos dinámicos",
+            "La estrategia organizacional determina la estructura adecuada"
+          ],
+          examples: [
+            {
+              title: "Startup vs Corporación",
+              description: "Las startups suelen emplear estructuras planas que facilitan la innovación rápida, mientras que corporaciones establecidas pueden necesitar estructuras más definidas."
+            },
+            {
+              title: "Modelos híbridos",
+              description: "Organizaciones como Spotify utilizan 'tribus' y 'squads' para combinar estabilidad estructural con flexibilidad innovadora."
+            }
+          ],
+          relationships: ["ADMIN.GESTION", "MERCADEO.ESTRATEGIAS"],
+          decisionTree: {
+            question: "¿Qué enfoque estructural facilita la innovación?",
+            factors: [
+              "Nivel de autonomía de equipos",
+              "Velocidad de cambio del mercado",
+              "Diversidad de talentos disponibles",
+              "Cultura organizacional existente"
+            ]
+          },
+          applicationTable: {
+            title: "Aplicación de estructuras según objetivos",
+            rows: [
+              {
+                structure: "Adhocracia",
+                whenToUse: "Entornos altamente creativos con cambios constantes",
+                whenToAvoid: "Operaciones que requieren alta estandarización"
+              },
+              {
+                structure: "Mecanicista",
+                whenToUse: "Operaciones estables con procesos previsibles",
+                whenToAvoid: "Industrias emergentes con tecnologías disruptivas"
+              }
             ]
           }
         },
@@ -48,11 +91,11 @@ const ModoAprendizajeExploratorio = () => {
               description: "Estructura plana con equipos autónomos (squads) que permite innovación rápida, pero requiere coordinación adicional."
             },
             {
-              title: "Ejército",
+              title: "Ejercicio",
               description: "Estructura jerárquica estricta que asegura disciplina y cadena de mando clara, pero puede limitar la iniciativa individual."
             }
           ],
-          relationships: ["MERCADEO.ESTRATEGIAS", "PRODUCCION.TECNICAS"],
+          relationships: ["MERCADEO.ESTRATEGIAS", "PRODUCCION.TECNICAS", "ADMIN.AUTORIDAD"],
           applicationTable: {
             title: "Cuándo aplicar cada estructura",
             rows: [
@@ -104,6 +147,33 @@ const ModoAprendizajeExploratorio = () => {
             ]
           }
         },
+        ESTRUCTURAS: {
+          title: "Estructuras para Producción",
+          content: [
+            "Estructuras por procesos favorecen la eficiencia productiva",
+            "Estructuras flexibles facilitan sistemas Just-In-Time",
+            "La organización por células potencia el control de calidad"
+          ],
+          examples: [
+            {
+              title: "Toyota Production System",
+              description: "Estructura flexible que implementa Just-In-Time y mejora continua, eliminando inventarios innecesarios y maximizando eficiencia."
+            },
+            {
+              title: "IKEA",
+              description: "Estructura por procesos que optimiza el flujo desde diseño hasta distribución, reduciendo costos y manteniendo calidad."
+            }
+          ],
+          relationships: ["ESTRUCTURA.VENTAJAS", "COSTOS_PROC.AUTOMATIZACION"],
+          causeEffect: {
+            title: "Impacto de la estructura en producción",
+            effects: [
+              "Estructuras verticales → Mayor control pero menor capacidad de adaptación",
+              "Estructuras por procesos → Mejor flujo productivo pero posible redundancia",
+              "Estructuras matriciales → Equilibrio entre especialización y coordinación"
+            ]
+          }
+        },
         TECNICAS: {
           title: "Técnicas Modernas",
           content: [
@@ -121,7 +191,7 @@ const ModoAprendizajeExploratorio = () => {
               description: "Pionera del Just-in-Time y Kanban, con proveedores cerca de las plantas para minimizar tiempos de entrega."
             }
           ],
-          relationships: ["ESTRUCTURA.VENTAJAS", "MERCADEO.HERRAMIENTAS"],
+          relationships: ["ESTRUCTURA.VENTAJAS", "MERCADEO.HERRAMIENTAS", "COSTOS_PROC.REINGENIERIA"],
           causeEffect: {
             title: "Impacto de técnicas modernas",
             effects: [
@@ -144,7 +214,7 @@ const ModoAprendizajeExploratorio = () => {
           content: [
             "Segmentación de mercado",
             "Posicionamiento de marca",
-            "Marketing digital"
+            "Marketing digital y tradicional"
           ],
           examples: [
             {
@@ -161,6 +231,40 @@ const ModoAprendizajeExploratorio = () => {
             "¿Cómo afecta la estrategia de segmentación a los costos de producción?",
             "¿Qué métricas son críticas para evaluar el ROI de una estrategia de posicionamiento?"
           ]
+        },
+        ESTRUCTURAS: {
+          title: "Estructuras para Mercadeo",
+          content: [
+            "Estructuras geográficas para mercados internacionales",
+            "Estructuras por proyectos para desarrollo de nuevos productos",
+            "Estructuras ágiles para mercadeo digital"
+          ],
+          examples: [
+            {
+              title: "Unilever",
+              description: "Estructura geográfica con adaptaciones locales para cada mercado, permitiendo campañas culturalmente relevantes."
+            },
+            {
+              title: "Agencias digitales",
+              description: "Adoptan estructuras ágiles con equipos multidisciplinarios para responder rápidamente a tendencias y métricas en tiempo real."
+            }
+          ],
+          relationships: ["ESTRUCTURA.TIPOS", "ADMIN.DECISION"],
+          applicationTable: {
+            title: "Selección de estructura según enfoque de mercado",
+            rows: [
+              {
+                structure: "Geográfica",
+                whenToUse: "Expansión internacional con necesidades culturales distintas",
+                whenToAvoid: "Productos globales sin diferenciación regional"
+              },
+              {
+                structure: "Por producto",
+                whenToUse: "Portafolio amplio con estrategias de marketing distintas",
+                whenToAvoid: "Líneas de productos muy similares o complementarias"
+              }
+            ]
+          }
         },
         HERRAMIENTAS: {
           title: "Herramientas Comunes",
@@ -179,7 +283,7 @@ const ModoAprendizajeExploratorio = () => {
               description: "Implementa estudios de mercado en tiempo real observando tendencias en redes sociales y comportamiento en tienda."
             }
           ],
-          relationships: ["PRODUCCION.TECNICAS", "FINANZAS.AREAS"],
+          relationships: ["PRODUCCION.TECNICAS", "FINANZAS.AREAS", "COSTOS_ORG.CULTURA"],
           applicationTable: {
             title: "Cuándo usar cada herramienta",
             rows: [
@@ -231,6 +335,33 @@ const ModoAprendizajeExploratorio = () => {
             ]
           }
         },
+        ESTRUCTURAS: {
+          title: "Estructuras para Finanzas",
+          content: [
+            "Estructuras divisionales facilitan control financiero descentralizado",
+            "Estructuras matriciales permiten mejor asignación de recursos",
+            "Estructuras horizontales reducen costos administrativos"
+          ],
+          examples: [
+            {
+              title: "General Electric",
+              description: "Su estructura divisional permite que cada unidad de negocio tenga autonomía financiera y responsabilidad por resultados."
+            },
+            {
+              title: "Empresas de consultoría",
+              description: "Utilizan estructuras matriciales para asignar consultores a proyectos según necesidades y optimizar utilización de talento."
+            }
+          ],
+          relationships: ["ESTRUCTURA.VENTAJAS", "COSTOS_ORG.COSTOS"],
+          causeEffect: {
+            title: "Efecto de estructuras en finanzas",
+            effects: [
+              "Estructuras divisionales → Mayor autonomía financiera pero posible duplicación de recursos",
+              "Estructuras horizontales → Menores costos administrativos pero posibles desafíos de coordinación",
+              "Estructuras centralizadas → Mayor control pero procesos de decisión más lentos"
+            ]
+          }
+        },
         INDICADORES: {
           title: "Indicadores Clave",
           content: [
@@ -248,13 +379,424 @@ const ModoAprendizajeExploratorio = () => {
               description: "Priorizó crecimiento y participación de mercado sobre rentabilidad inmediata, tolerando flujos de caja negativos."
             }
           ],
-          relationships: ["PRODUCCION.PROCESOS", "MERCADEO.ESTRATEGIAS"],
+          relationships: ["PRODUCCION.PROCESOS", "MERCADEO.ESTRATEGIAS", "COSTOS_ORG.IMPACTO"],
           causeEffect: {
             title: "Decisiones financieras y sus efectos",
             effects: [
               "Mayor endeudamiento → Posible crecimiento acelerado pero mayor riesgo",
               "Política de dividendos generosa → Atrae cierto perfil de inversores pero limita reinversión",
               "Inversión en automatización → Mayores costos iniciales pero reducción de costos operativos a largo plazo"
+            ]
+          }
+        }
+      }
+    },
+    RRHH: {
+      title: "Función de Recursos Humanos",
+      description: "Gestión del talento y desarrollo del capital humano",
+      icon: "👥",
+      subtemas: {
+        DESARROLLO: {
+          title: "Desarrollo Profesional",
+          content: [
+            "Modelos por proyectos con rotación facilitan el crecimiento profesional",
+            "Planes de capacitación continua aumentan la retención del talento",
+            "Mentoría y coaching mejoran habilidades de liderazgo"
+          ],
+          examples: [
+            {
+              title: "Google",
+              description: "Ofrece tiempo para proyectos personales (20% time) permitiendo desarrollo profesional y potencial innovación."
+            },
+            {
+              title: "McKinsey",
+              description: "Rotación entre proyectos e industrias que enriquece experiencia y desarrolla habilidades diversas."
+            }
+          ],
+          relationships: ["ESTRUCTURA.TIPOS", "ADMIN.GESTION"],
+          applicationTable: {
+            title: "Estrategias de desarrollo por tipo de organización",
+            rows: [
+              {
+                strategy: "Rotación de proyectos",
+                whenToUse: "Empresas de consultoría o tecnología",
+                whenToAvoid: "Roles altamente especializados o técnicos"
+              },
+              {
+                strategy: "Plan de carrera vertical",
+                whenToUse: "Organizaciones jerárquicas establecidas",
+                whenToAvoid: "Startups o empresas con estructura plana"
+              }
+            ]
+          }
+        },
+        RETENCION: {
+          title: "Retención de Talento",
+          content: [
+            "Organizaciones que aprenden potencian la retención del personal clave",
+            "Culturas de reconocimiento mejoran la satisfacción laboral",
+            "Compensación competitiva es necesaria pero no suficiente"
+          ],
+          examples: [
+            {
+              title: "Salesforce",
+              description: "Combina aprendizaje continuo, voluntariado corporativo y compensación competitiva para retener talento."
+            },
+            {
+              title: "LinkedIn",
+              description: "Cultura de transparencia y oportunidades de desarrollo interno que reduce la rotación de empleados."
+            }
+          ],
+          relationships: ["COSTOS_ORG.CULTURA", "ESTRUCTURA.VENTAJAS"],
+          causeEffect: {
+            title: "Factores que impactan la retención",
+            effects: [
+              "Cultura tóxica → Principal causa de rotación voluntaria",
+              "Falta de crecimiento → Éxodo de talento de alto potencial",
+              "Liderazgo efectivo → Mayor compromiso y retención"
+            ]
+          }
+        },
+        CONOCIMIENTO: {
+          title: "Gestión del Conocimiento",
+          content: [
+            "Estructuras colaborativas en red facilitan el intercambio de información",
+            "Comunidades de práctica preservan conocimiento especializado",
+            "Documentación y digitalización previenen pérdida de know-how"
+          ],
+          examples: [
+            {
+              title: "Microsoft",
+              description: "Utiliza comunidades de práctica, wikis internos y herramientas colaborativas para preservar y compartir conocimiento."
+            },
+            {
+              title: "Toyota",
+              description: "Documenta sistemáticamente mejores prácticas mediante el concepto de 'lecciones de un punto' para transferencia de conocimiento."
+            }
+          ],
+          relationships: ["ADMIN.PROCESOS", "COSTOS_PROC.SISTEMAS"],
+          decisionTree: {
+            question: "¿Cómo estructurar la gestión del conocimiento?",
+            factors: [
+              "Naturaleza del conocimiento (tácito vs explícito)",
+              "Distribución geográfica de la organización",
+              "Cultura de compartir vs competir",
+              "Infraestructura tecnológica disponible"
+            ]
+          }
+        }
+      }
+    },
+    ADMIN: {
+      title: "Función Administrativa",
+      description: "Planificación, organización y control de procesos organizacionales",
+      icon: "📋",
+      subtemas: {
+        GESTION: {
+          title: "Gestión por Procesos",
+          content: [
+            "Requiere estructuras flexibles que superen barreras funcionales",
+            "Enfocada en el valor para el cliente final",
+            "Necesita medición constante y mejora continua"
+          ],
+          examples: [
+            {
+              title: "Amazon",
+              description: "Organiza sus operaciones por procesos centrados en la experiencia del cliente, permitiendo optimización constante."
+            },
+            {
+              title: "Hospitales modernos",
+              description: "Organizan la atención médica por procesos (diagnóstico a tratamiento) en lugar de departamentos aislados."
+            }
+          ],
+          relationships: ["ESTRUCTURA.INNOVACION", "COSTOS_PROC.REINGENIERIA"],
+          applicationTable: {
+            title: "Implementación de gestión por procesos",
+            rows: [
+              {
+                phase: "Identificación de procesos clave",
+                challenge: "Superar visión departamental",
+                benefit: "Visualizar flujos de valor completos"
+              },
+              {
+                phase: "Optimización de procesos",
+                challenge: "Resistencia al cambio",
+                benefit: "Eliminación de redundancias y cuellos de botella"
+              }
+            ]
+          }
+        },
+        AUTORIDAD: {
+          title: "Tipos de Autoridad",
+          content: [
+            "Estructuras matriciales utilizan autoridad dual (funcional y de proyecto)",
+            "Autoridad descentralizada acelera toma de decisiones",
+            "Balance entre autonomía y alineación estratégica"
+          ],
+          examples: [
+            {
+              title: "Pixar",
+              description: "Combina autoridad creativa de directores con supervisión técnica de especialistas, en estructura matricial."
+            },
+            {
+              title: "W.L. Gore",
+              description: "Estructura con mínima jerarquía formal, donde la autoridad se basa en experiencia y liderazgo natural."
+            }
+          ],
+          relationships: ["ESTRUCTURA.VENTAJAS", "RRHH.CONOCIMIENTO"],
+          causeEffect: {
+            title: "Impacto de modelos de autoridad",
+            effects: [
+              "Autoridad centralizada → Decisiones consistentes pero lentas",
+              "Autoridad delegada → Mayor agilidad pero posible desalineación",
+              "Autoridad dual → Equilibrio pero potenciales conflictos"
+            ]
+          }
+        },
+        DECISION: {
+          title: "Toma de Decisiones",
+          content: [
+            "Estructuras descentralizadas facilitan decisiones rápidas",
+            "Procesos de decisión deben alinearse con contexto organizacional",
+            "Balance entre datos y experiencia según tipo de decisión"
+          ],
+          examples: [
+            {
+              title: "Netflix",
+              description: "Promueve alta autonomía decisional con el principio 'context, not control' para acelerar innovación."
+            },
+            {
+              title: "Amazon",
+              description: "Utiliza el marco 'decisiones de tipo 1 y tipo 2' para balancear decisiones reversibles (rápidas) e irreversibles (cuidadosas)."
+            }
+          ],
+          relationships: ["MERCADEO.ESTRUCTURAS", "FINANZAS.ESTRUCTURAS"],
+          decisionTree: {
+            question: "¿Qué proceso decisional implementar?",
+            factors: [
+              "Reversibilidad de la decisión",
+              "Impacto estratégico",
+              "Complejidad del problema",
+              "Urgencia requerida"
+            ]
+          }
+        }
+      }
+    },
+    COSTOS_ORG: {
+      title: "Costos en Aspectos Organizacionales",
+      description: "Impacto económico de la estructura y cultura organizacional",
+      icon: "📊",
+      subtemas: {
+        COSTOS: {
+          title: "Costos Administrativos",
+          content: [
+            "Estructuras planas tienen menores costos administrativos que jerárquicas",
+            "Descentralización aumenta costos de coordinación",
+            "Centralización puede generar ineficiencias por burocracia"
+          ],
+          examples: [
+            {
+              title: "Valve Corporation",
+              description: "Estructura plana sin jefes formales que minimiza costos administrativos pero requiere madurez organizacional."
+            },
+            {
+              title: "Multinacionales tradicionales",
+              description: "Estructuras con múltiples niveles jerárquicos que aumentan overhead pero pueden ser necesarias para organizaciones grandes."
+            }
+          ],
+          relationships: ["ESTRUCTURA.VENTAJAS", "FINANZAS.ESTRUCTURAS"],
+          causeEffect: {
+            title: "Impacto de estructura en costos",
+            effects: [
+              "Cada nivel jerárquico → +10-15% costos administrativos",
+              "Decisiones centralizadas → Mayor consistencia pero menor velocidad",
+              "Departamentos aislados → Duplicación de recursos y esfuerzos"
+            ]
+          }
+        },
+        CULTURA: {
+          title: "Cultura y Costos",
+          content: [
+            "Cultura organizacional positiva reduce rotación y costos asociados",
+            "Compromiso del personal aumenta productividad y reduce supervisión",
+            "Culturas tóxicas generan costos ocultos significativos"
+          ],
+          examples: [
+            {
+              title: "Zappos",
+              description: "Inversión en cultura y satisfacción de empleados que resultó en menor rotación y mayor productividad."
+            },
+            {
+              title: "Southwest Airlines",
+              description: "Cultura de pertenencia y orgullo que reduce ausentismo y mejora servicio al cliente sin supervisión intensiva."
+            }
+          ],
+          relationships: ["RRHH.RETENCION", "MERCADEO.HERRAMIENTAS"],
+          applicationTable: {
+            title: "Medición del impacto de cultura en costos",
+            rows: [
+              {
+                metric: "Costo por rotación",
+                formula: "1-2 años de salario por posición perdida",
+                impact: "Directo en presupuesto de contratación y capacitación"
+              },
+              {
+                metric: "Productividad por compromiso",
+                formula: "Diferencial de 20-25% entre empleados comprometidos vs desconectados",
+                impact: "Indirecto en resultados operativos"
+              }
+            ]
+          }
+        },
+        IMPACTO: {
+          title: "Medición de Impacto",
+          content: [
+            "Relación directa entre estructura organizacional y eficiencia de costos",
+            "Indicadores de gestión deben incluir costos organizacionales",
+            "Análisis costo-beneficio de cambios estructurales"
+          ],
+          examples: [
+            {
+              title: "IBM",
+              description: "Transformación de estructura vertical a modelo ágil que redujo costos administrativos en 25% y aumentó velocidad de innovación."
+            },
+            {
+              title: "Siemens",
+              description: "Implementación de centro de servicios compartidos que consolidó funciones administrativas y redujo costos organizacionales."
+            }
+          ],
+          relationships: ["FINANZAS.INDICADORES", "COSTOS_PROC.EFICIENCIA"],
+          decisionTree: {
+            question: "¿Cómo evaluar el costo-beneficio de una estructura?",
+            factors: [
+              "Costos directos de implementación",
+              "Costos de transición y aprendizaje",
+              "Beneficios esperados en productividad",
+              "Impacto en velocidad y calidad de decisiones"
+            ]
+          }
+        }
+      }
+    },
+    COSTOS_PROC: {
+      title: "Costos de Sistemas y Procedimientos",
+      description: "Eficiencia económica de los procesos administrativos",
+      icon: "📝",
+      subtemas: {
+        EFICIENCIA: {
+          title: "Costo-Eficiencia",
+          content: [
+            "Automatización mejora relación costo-eficiencia en procesos",
+            "Eliminación de pasos redundantes reduce costos operativos",
+            "Digitalización disminuye costos de manejo documental"
+          ],
+          examples: [
+            {
+              title: "Servicios bancarios",
+              description: "Transformación digital con automatización de procesos que redujo costos por transacción en más del 70%."
+            },
+            {
+              title: "Empresas de seguros",
+              description: "Automatización de procesamiento de reclamos que mejoró precisión y redujo tiempo de respuesta y costos operativos."
+            }
+          ],
+          relationships: ["PRODUCCION.TECNICAS", "COSTOS_ORG.IMPACTO"],
+          causeEffect: {
+            title: "Automatización y sus efectos",
+            effects: [
+              "Reducción de errores humanos → Menos costos de corrección",
+              "Estandarización de procesos → Mayor previsibilidad y control",
+              "Captura de datos automatizada → Mejor análisis y decisiones"
+            ]
+          }
+        },
+        REINGENIERIA: {
+          title: "Reingeniería de Procesos",
+          content: [
+            "Estructuras horizontales facilitan rediseño radical de procesos",
+            "Enfoque en valor agregado elimina actividades innecesarias",
+            "Transformación digital como catalizador de reingeniería"
+          ],
+          examples: [
+            {
+              title: "Ford Motor Company",
+              description: "Rediseño del proceso de cuentas por pagar que redujo personal en 75% mientras mejoraba precisión y velocidad."
+            },
+            {
+              title: "Progressive Insurance",
+              description: "Reingeniería del proceso de reclamos con evaluación en sitio que redujo tiempo y costos de procesamiento."
+            }
+          ],
+          relationships: ["ADMIN.GESTION", "PRODUCCION.TECNICAS"],
+          applicationTable: {
+            title: "Fases de reingeniería de procesos",
+            rows: [
+              {
+                phase: "Identificación de procesos clave",
+                challenge: "Resistencia departamental",
+                outcome: "Mapa de procesos con oportunidades de mejora"
+              },
+              {
+                phase: "Rediseño radical",
+                challenge: "Capacidad de imaginar alternativas distintas",
+                outcome: "Nuevos flujos optimizados de trabajo"
+              }
+            ]
+          }
+        },
+        SISTEMAS: {
+          title: "Procedimientos y Transacciones",
+          content: [
+            "Procedimientos burocráticos aumentan costos de transacción internos",
+            "Simplificación administrativa reduce tiempos y costos de procesamiento",
+            "Diseño de sistemas debe balancear control y agilidad"
+          ],
+          examples: [
+            {
+              title: "Amazon",
+              description: "Sistema de aprobaciones por excepción: procesos estándar son automáticos, solo excepciones requieren revisión humana."
+            },
+            {
+              title: "Gobierno de Estonia",
+              description: "Transformación digital de procedimientos gubernamentales que redujo burocracia y costos de transacción para ciudadanos y empresas."
+            }
+          ],
+          relationships: ["RRHH.CONOCIMIENTO", "ADMIN.AUTORIDAD"],
+          decisionTree: {
+            question: "¿Cómo reducir costos de transacción internos?",
+            factors: [
+              "Número de aprobaciones requeridas",
+              "Complejidad de formularios y documentación",
+              "Claridad de responsabilidades decisionales",
+              "Nivel de excepciones al proceso estándar"
+            ]
+          }
+        },
+        AUTOMATIZACION: {
+          title: "Tecnología y Costos",
+          content: [
+            "Sistemas integrados reducen duplicación y errores",
+            "Inteligencia artificial optimiza decisiones rutinarias",
+            "Análisis de datos mejora previsión y planificación"
+          ],
+          examples: [
+            {
+              title: "UPS",
+              description: "Sistema ORION que optimiza rutas de entrega ahorrando millones en combustible y tiempo de operación."
+            },
+            {
+              title: "Manufactureras",
+              description: "Implementación de IoT para mantenimiento predictivo que reduce paradas no programadas y costos de reparación."
+            }
+          ],
+          relationships: ["PRODUCCION.ESTRUCTURAS", "ADMIN.DECISION"],
+          causeEffect: {
+            title: "Inversión tecnológica y retorno",
+            effects: [
+              "Automatización básica → ROI rápido en procesos repetitivos",
+              "Sistemas integrados → Eliminación de silos y redundancias",
+              "Inversión en analítica → Mejores decisiones y previsiones"
             ]
           }
         }
