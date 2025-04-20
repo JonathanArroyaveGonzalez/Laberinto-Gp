@@ -41,3 +41,34 @@ p {
   max-width: 700px;
   margin: 0 auto 1.5rem;
 }
+
+// Estilos básicos (CSS)
+.learning-modal {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.learning-section {
+  margin-bottom: 15px;
+}
+
+.visual-diagram {
+  font-size: 24px;
+  text-align: center;
+  margin: 15px 0;
+}
+
+.fun-fact {
+  background: #f8f8f8;
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 15px;
+}
+
+.progress-map li.discovered {
+  font-weight: bold;
+  color: #2ecc71;
+}

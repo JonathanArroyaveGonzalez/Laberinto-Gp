@@ -45,7 +45,6 @@ const SVGs = {
   ESTRUCTURA: "🏗️"
 };
 
-// Desafíos ampliados con múltiples preguntas por tema
 const CHALLENGES = {
   PRODUCCION: [
     {
@@ -209,10 +208,7 @@ const CHALLENGES = {
   ]
 };
 
-
-// Generador de laberinto mejorado - más grande y con más elementos
 const generateMaze = (difficulty = 'normal') => {
-  // Tamaños según dificultad
   const sizes = {
     'easy': 6,
     'normal': 8,
@@ -221,104 +217,87 @@ const generateMaze = (difficulty = 'normal') => {
   
   const size = sizes[difficulty];
   
-  // Crear laberinto base vacío
-  const maze = Array(size).fill().map(() => Array(size).fill("PATH"));
-  
-  // Generar paredes aleatorias (30% de las celdas)
-  for (let i = 0; i < size; i++) {
-    for (let j = 0; j < size; j++) {
-      // Evitar colocar paredes en la entrada y salida
-      if ((i === 0 && j === 0) || (i === size-1 && j === size-1)) continue;
-      
-      if (Math.random() < 0.3) {
-        maze[i][j] = "WALL";
-      }
-    }
-  }
-  
-  // Asegurar que hay un camino válido de inicio a fin usando BFS
-  const createPath = () => {
-    maze[0][0] = "START";
-    maze[size-1][size-1] = "GOAL";
-    
-    // Usamos BFS para verificar y crear un camino válido
-    const queue = [{row: 0, col: 0, path: []}];
-    const visited = new Set(["0-0"]);
+  // Función para verificar accesibilidad a todas las celdas especiales
+  const verifyAllAccessible = (maze, specialCells, start) => {
+    const visited = new Set();
+    const queue = [start];
+    const keys = Object.keys(specialCells);
+    let foundCount = 0;
     
     while (queue.length > 0) {
-      const {row, col, path} = queue.shift();
+      const {row, col} = queue.shift();
+      const key = `${row}-${col}`;
       
-      if (row === size-1 && col === size-1) {
-        // Tenemos un camino, aseguremos que sea transitable
-        path.forEach(pos => {
-          const [r, c] = pos.split('-').map(Number);
-          maze[r][c] = "PATH";
-        });
-        return true;
-      }
+      if (visited.has(key)) continue;
+      visited.add(key);
       
+      // Contar si es una celda especial
+      if (keys.includes(key)) foundCount++;
+      
+      // Verificar si encontramos todas
+      if (foundCount === keys.length) return true;
+      
+      // Explorar vecinos
       const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
       for (const [dr, dc] of directions) {
         const newRow = row + dr;
         const newCol = col + dc;
         
         if (newRow >= 0 && newRow < size && newCol >= 0 && newCol < size) {
-          const key = `${newRow}-${newCol}`;
-          if (!visited.has(key)) {
-            visited.add(key);
-            queue.push({
-              row: newRow, 
-              col: newCol, 
-              path: [...path, key]
-            });
+          if (maze[newRow][newCol] !== "WALL") {
+            queue.push({row: newRow, col: newCol});
           }
         }
       }
     }
     
-    // Si no hay camino, intentamos de nuevo
     return false;
   };
+
+  // Generar laberinto hasta que sea válido
+  let validMaze = false;
+  let maze, specialCells, resources, enemies;
+  const usedCells = new Set(); // Initialize usedCells to track occupied cells
   
-  // Intentar crear un camino hasta 10 veces
-  let pathCreated = false;
-  for (let attempt = 0; attempt < 10 && !pathCreated; attempt++) {
-    pathCreated = createPath();
-    if (!pathCreated) {
-      // Reducir paredes y reintentar
-      for (let i = 0; i < size; i++) {
-        for (let j = 0; j < size; j++) {
-          if (maze[i][j] === "WALL" && Math.random() < 0.4) {
-            maze[i][j] = "PATH";
-          }
+  while (!validMaze) {
+    // Reiniciar variables
+    maze = Array(size).fill().map(() => Array(size).fill("PATH"));
+    specialCells = {};
+    resources = [];
+    enemies = [];
+    
+    // Generar paredes (con menor densidad)
+    for (let i = 0; i < size; i++) {
+      for (let j = 0; j < size; j++) {
+        if ((i === 0 && j === 0) || (i === size-1 && j === size-1)) continue;
+        if (Math.random() < 0.25) maze[i][j] = "WALL";
+      }
+    }
+    
+    // Colocar temas especiales asegurando que estén en PATH
+    const topics = Object.keys(SPECIAL_TOPICS);
+    const usedCells = new Set(["0-0", `${size-1}-${size-1}`]);
+    
+    topics.forEach(topic => {
+      let placed = false;
+      while (!placed) {
+        const row = Math.floor(Math.random() * size);
+        const col = Math.floor(Math.random() * size);
+        const key = `${row}-${col}`;
+        
+        if (!usedCells.has(key) && maze[row][col] === "PATH") {
+          specialCells[key] = topic;
+          usedCells.add(key);
+          placed = true;
         }
       }
-    }
+    });
+    
+    // Verificar accesibilidad
+    validMaze = verifyAllAccessible(maze, specialCells, {row: 0, col: 0});
   }
   
-  // Colocar temas especiales
-  const topics = Object.keys(SPECIAL_TOPICS);
-  const specialCells = {};
-  const usedCells = new Set(["0-0", `${size-1}-${size-1}`]);
-  
-  // Distribuir todos los temas
-  topics.forEach(topic => {
-    let placed = false;
-    while (!placed) {
-      const row = Math.floor(Math.random() * size);
-      const col = Math.floor(Math.random() * size);
-      const key = `${row}-${col}`;
-      
-      if (!usedCells.has(key) && maze[row][col] === "PATH") {
-        specialCells[key] = topic;
-        usedCells.add(key);
-        placed = true;
-      }
-    }
-  });
-  
   // Añadir recursos bonus
-  const resources = [];
   for (let i = 0; i < 3; i++) {
     let placed = false;
     while (!placed) {
@@ -335,7 +314,6 @@ const generateMaze = (difficulty = 'normal') => {
   }
   
   // Añadir obstáculos móviles (enemigos)
-  const enemies = [];
   for (let i = 0; i < Math.floor(size/3); i++) {
     let placed = false;
     while (!placed) {
@@ -351,6 +329,10 @@ const generateMaze = (difficulty = 'normal') => {
     }
   }
   
+  // Asegurar entrada y salida
+  maze[0][0] = "START";
+  maze[size-1][size-1] = "GOAL";
+  
   return { maze, specialCells, resources, enemies, size };
 };
 
@@ -365,7 +347,7 @@ export default function LaberintoCorporativo() {
     visitedTopics: {},
     score: 0,
     lives: 3,
-    time: 180, // 3 minutos
+    time: 180,
     size: 8
   });
   
@@ -376,18 +358,62 @@ export default function LaberintoCorporativo() {
   const [paused, setPaused] = useState(false);
   const [currentLevel, setCurrentLevel] = useState(1);
   const [knowledgeBase, setKnowledgeBase] = useState({});
-  
+  const [hints, setHints] = useState(3);
+  const [explored, setExplored] = useState(new Set(["0-0"]));
+  const [powerUps, setPowerUps] = useState({
+    speedBoost: false,
+    invincibility: false
+  });
+
+  const startNewGame = useCallback(() => {
+  const { maze, specialCells, resources, enemies, size } = generateMaze(difficulty);
+
+  setGameState({
+    maze,
+    playerPos: { row: 0, col: 0 },
+    specialCells,
+    resources,
+    enemies,
+    visitedTopics: {},
+    score: 0,
+    lives: 3,
+    time: difficulty === 'easy' ? 240 : difficulty === 'normal' ? 180 : 120,
+    size,
+  });
+
+  setWin(false);
+  setGameOver(false);
+  setPaused(false);
+  setExplored(new Set(["0-0"]));
+  setHints(3);
+  setPowerUps({
+    speedBoost: false,
+    invincibility: false,
+  });
+}, [difficulty]);
+
+useEffect(() => {
+  startNewGame();
+  return () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (enemyTimerRef.current) clearInterval(enemyTimerRef.current);
+    if (powerUpTimerRef.current) clearTimeout(powerUpTimerRef.current);
+  };
+}, [difficulty, startNewGame]);
+
   const gameRef = useRef(null);
   const timerRef = useRef(null);
   const enemyTimerRef = useRef(null);
+  const powerUpTimerRef = useRef(null);
 
-    const moveEnemies = useCallback(() => {
+  const moveEnemies = useCallback(() => {
+    if (powerUps.invincibility) return;
+
     setGameState(prev => {
       const newEnemies = prev.enemies.map(enemy => {
-        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]; // arriba, abajo, izq, der
+        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
         let newDirection = enemy.direction;
         
-        // 20% de probabilidad de cambiar dirección
         if (Math.random() < 0.2) {
           newDirection = Math.floor(Math.random() * 4);
         }
@@ -396,13 +422,11 @@ export default function LaberintoCorporativo() {
         let newRow = enemy.row + dr;
         let newCol = enemy.col + dc;
         
-        // Verificar límites y paredes
         if (
           newRow >= 0 && newRow < prev.size && 
           newCol >= 0 && newCol < prev.size &&
           prev.maze[newRow][newCol] !== "WALL"
         ) {
-          // Verificar si hay otro enemigo en esa posición
           const enemyCollision = prev.enemies.some(
             e => e !== enemy && e.row === newRow && e.col === newCol
           );
@@ -412,17 +436,14 @@ export default function LaberintoCorporativo() {
           }
         }
         
-        // Si no puede moverse, cambiar dirección
         return { ...enemy, direction: (newDirection + 1) % 4 };
       });
       
-      // Verificar si algún enemigo choca con el jugador
       const playerHit = newEnemies.some(
         e => e.row === prev.playerPos.row && e.col === prev.playerPos.col
       );
       
       if (playerHit && prev.lives > 0) {
-        // Restar vida y mover al jugador a posición inicial
         return {
           ...prev,
           enemies: newEnemies,
@@ -430,7 +451,6 @@ export default function LaberintoCorporativo() {
           lives: prev.lives - 1
         };
       } else if (playerHit && prev.lives <= 1) {
-        // Game over si no quedan vidas
         setTimeout(() => handleGameOver(), 100);
         return {
           ...prev,
@@ -444,15 +464,17 @@ export default function LaberintoCorporativo() {
         enemies: newEnemies
       };
     });
-  }, []);
+  }, [powerUps.invincibility]);
 
-  // Iniciar juego
   useEffect(() => {
     startNewGame();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [difficulty]);
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      if (enemyTimerRef.current) clearInterval(enemyTimerRef.current);
+      if (powerUpTimerRef.current) clearTimeout(powerUpTimerRef.current);
+    };
+  }, [difficulty, startNewGame]);
 
-  // Manejar el timer del juego
   useEffect(() => {
     if (gameState.time <= 0 && !win && !gameOver && !paused) {
       handleGameOver();
@@ -472,7 +494,6 @@ export default function LaberintoCorporativo() {
     };
   }, [gameState.time, win, gameOver, paused]);
 
-  // Mover enemigos
   useEffect(() => {
     if (!win && !gameOver && !paused && gameState.enemies.length > 0) {
       enemyTimerRef.current = setInterval(() => {
@@ -485,40 +506,18 @@ export default function LaberintoCorporativo() {
     };
   }, [win, gameOver, paused, gameState.enemies.length, moveEnemies]);
 
-  // Mantener foco en el juego
   useEffect(() => {
     if (gameRef.current && !modal && !win && !gameOver && !showHelp) {
       gameRef.current.focus();
     }
   }, [modal, win, gameOver, showHelp]);
   
-  const startNewGame = () => {
-    const { maze, specialCells, resources, enemies, size } = generateMaze(difficulty);
-    
-    setGameState({
-      maze,
-      playerPos: { row: 0, col: 0 },
-      specialCells,
-      resources,
-      enemies,
-      visitedTopics: {},
-      score: 0,
-      lives: 3,
-      time: difficulty === 'easy' ? 240 : difficulty === 'normal' ? 180 : 120,
-      size
-    });
-    
-    setWin(false);
-    setGameOver(false);
-    setPaused(false);
-  };
-  
-
 
   const handleGameOver = () => {
     setGameOver(true);
     if (timerRef.current) clearTimeout(timerRef.current);
     if (enemyTimerRef.current) clearInterval(enemyTimerRef.current);
+    if (powerUpTimerRef.current) clearTimeout(powerUpTimerRef.current);
   };
 
   const movePlayer = (dir) => {
@@ -528,23 +527,63 @@ export default function LaberintoCorporativo() {
     let newRow = row;
     let newCol = col;
 
-    if (dir === "ArrowUp") newRow = Math.max(0, row - 1);
-    if (dir === "ArrowDown") newRow = Math.min(gameState.size - 1, row + 1);
-    if (dir === "ArrowLeft") newCol = Math.max(0, col - 1);
-    if (dir === "ArrowRight") newCol = Math.min(gameState.size - 1, col + 1);
+    const moveAmount = powerUps.speedBoost ? 2 : 1;
+
+    if (dir === "ArrowUp") newRow = Math.max(0, row - moveAmount);
+    if (dir === "ArrowDown") newRow = Math.min(gameState.size - 1, row + moveAmount);
+    if (dir === "ArrowLeft") newCol = Math.max(0, col - moveAmount);
+    if (dir === "ArrowRight") newCol = Math.min(gameState.size - 1, col + moveAmount);
+
+    // Verificar si hay paredes en el camino (solo para movimiento doble)
+    if (moveAmount > 1) {
+      const stepRow = dir === "ArrowUp" ? -1 : dir === "ArrowDown" ? 1 : 0;
+      const stepCol = dir === "ArrowLeft" ? -1 : dir === "ArrowRight" ? 1 : 0;
+      
+      let currentRow = row;
+      let currentCol = col;
+      let canMove = true;
+      
+      for (let i = 0; i < moveAmount; i++) {
+        currentRow += stepRow;
+        currentCol += stepCol;
+        
+        if (
+          currentRow < 0 || currentRow >= gameState.size ||
+          currentCol < 0 || currentCol >= gameState.size ||
+          gameState.maze[currentRow][currentCol] === "WALL"
+        ) {
+          canMove = false;
+          break;
+        }
+      }
+      
+      if (!canMove) {
+        newRow = row + stepRow * (moveAmount - 1);
+        newCol = col + stepCol * (moveAmount - 1);
+        
+        // Ajustar para no salir del laberinto
+        newRow = Math.max(0, Math.min(gameState.size - 1, newRow));
+        newCol = Math.max(0, Math.min(gameState.size - 1, newCol));
+      }
+    }
 
     if (gameState.maze[newRow][newCol] !== "WALL") {
       const key = `${newRow}-${newCol}`;
       const topic = gameState.specialCells[key];
       
+      // Actualizar celdas exploradas
+      const newExplored = new Set(explored);
+      newExplored.add(key);
+      setExplored(newExplored);
+      
       // Comprobar si hay un enemigo en la nueva posición
       const enemyHit = gameState.enemies.some(e => e.row === newRow && e.col === newCol);
       
-      if (enemyHit) {
+      if (enemyHit && !powerUps.invincibility) {
         if (gameState.lives > 1) {
           setGameState(prev => ({
             ...prev,
-            playerPos: { row: 0, col: 0 }, // Enviar jugador al inicio
+            playerPos: { row: 0, col: 0 },
             lives: prev.lives - 1
           }));
         } else {
@@ -564,8 +603,9 @@ export default function LaberintoCorporativo() {
         newResources.splice(resourceIndex, 1);
         
         // Bonificación aleatoria
-        const bonusType = Math.floor(Math.random() * 3);
+        const bonusType = Math.floor(Math.random() * 4);
         let bonusMessage = "";
+        let newPowerUps = {...powerUps};
         
         if (bonusType === 0) {
           // Bonus de tiempo
@@ -587,18 +627,36 @@ export default function LaberintoCorporativo() {
             lives: Math.min(prev.lives + 1, 5),
             score: prev.score + 50
           }));
-        } else {
-          // Bonus de puntos
-          bonusMessage = "¡100 puntos extra!";
+        } else if (bonusType === 2) {
+          // Bonus de velocidad
+          bonusMessage = "¡Velocidad aumentada por 10 segundos!";
+          newPowerUps.speedBoost = true;
+          setPowerUps(newPowerUps);
           setGameState(prev => ({
             ...prev,
             playerPos: { row: newRow, col: newCol },
             resources: newResources,
-            score: prev.score + 150
+            score: prev.score + 50
           }));
+          powerUpTimerRef.current = setTimeout(() => {
+            setPowerUps(prev => ({...prev, speedBoost: false}));
+          }, 10000);
+        } else {
+          // Bonus de invencibilidad
+          bonusMessage = "¡Invencibilidad por 10 segundos!";
+          newPowerUps.invincibility = true;
+          setPowerUps(newPowerUps);
+          setGameState(prev => ({
+            ...prev,
+            playerPos: { row: newRow, col: newCol },
+            resources: newResources,
+            score: prev.score + 50
+          }));
+          powerUpTimerRef.current = setTimeout(() => {
+            setPowerUps(prev => ({...prev, invincibility: false}));
+          }, 10000);
         }
         
-        // Mostrar mensaje de bonus
         setModal({
           type: "bonus",
           message: bonusMessage
@@ -633,10 +691,14 @@ export default function LaberintoCorporativo() {
           const visitedCount = Object.keys(gameState.visitedTopics).length;
           const totalRequired = requiredTopics.length;
           
-          if (visitedCount >= totalRequired * 0.75) { // 75% de temas visitados para ganar
+          if (visitedCount >= totalRequired * 0.75) {
             handleWin();
           } else {
-            alert(`¡Debes completar al menos ${Math.ceil(totalRequired * 0.75)} departamentos antes de finalizar!`);
+            setModal({
+              type: "goalWarning",
+              message: `¡Debes completar al menos ${Math.ceil(totalRequired * 0.75)} departamentos antes de finalizar!`
+            });
+            setTimeout(() => setModal(null), 2000);
             setGameState(prev => ({
               ...prev,
               playerPos: { row, col }
@@ -658,9 +720,58 @@ export default function LaberintoCorporativo() {
     }
   };
 
+  const findPathToUnvisited = () => {
+    const unvisited = Object.keys(SPECIAL_TOPICS).filter(
+      topic => !gameState.visitedTopics[topic]
+    );
+    
+    if (unvisited.length === 0 || hints <= 0) return null;
+    
+    const targetTopic = unvisited[Math.floor(Math.random() * unvisited.length)];
+    const targetKey = Object.entries(gameState.specialCells).find(
+      ([, topic]) => topic === targetTopic
+    )?.[0];
+    
+    if (!targetKey) return null;
+    
+    const [targetRow, targetCol] = targetKey.split('-').map(Number);
+    
+    // BFS para encontrar camino
+    const queue = [{row: gameState.playerPos.row, col: gameState.playerPos.col, path: []}];
+    const visited = new Set([`${gameState.playerPos.row}-${gameState.playerPos.col}`]);
+    
+    while (queue.length > 0) {
+      const {row, col, path} = queue.shift();
+      
+      if (row === targetRow && col === targetCol) {
+        return path.slice(0, 3); // Mostrar solo los primeros 3 pasos
+      }
+      
+      const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+      for (const [dr, dc] of directions) {
+        const newRow = row + dr;
+        const newCol = col + dc;
+        const key = `${newRow}-${newCol}`;
+        
+        if (newRow >= 0 && newRow < gameState.size && 
+            newCol >= 0 && newCol < gameState.size &&
+            !visited.has(key) && 
+            gameState.maze[newRow][newCol] !== "WALL") {
+          visited.add(key);
+          queue.push({
+            row: newRow,
+            col: newCol,
+            path: [...path, {row: newRow, col: newCol}]
+          });
+        }
+      }
+    }
+    
+    return null;
+  };
+
   const handleAnswer = (isCorrect) => {
     if (isCorrect) {
-      // Guardar conocimiento adquirido
       setKnowledgeBase(prev => ({
         ...prev,
         [modal.topic]: [...(prev[modal.topic] || []), {
@@ -675,11 +786,9 @@ export default function LaberintoCorporativo() {
         playerPos: modal.newPos,
         visitedTopics: { ...prev.visitedTopics, [modal.topic]: true },
         score: prev.score + 100,
-        // Bonificación de tiempo por respuesta correcta
         time: prev.time + 15
       }));
       
-      // Mostrar explicación
       setModal({
         type: "explanation",
         topic: modal.topic,
@@ -693,7 +802,6 @@ export default function LaberintoCorporativo() {
       setGameState(prev => ({
         ...prev,
         playerPos: modal.prevPos,
-        // Penalización de tiempo por respuesta incorrecta
         time: Math.max(0, prev.time - 10)
       }));
       
@@ -702,9 +810,7 @@ export default function LaberintoCorporativo() {
   };
 
   const handleWin = () => {
-    // Calcular bonus por tiempo restante
     const timeBonus = gameState.time * 5;
-    // Calcular bonus por temas visitados
     const topicsBonus = Object.keys(gameState.visitedTopics).length * 100;
     
     setGameState(prev => ({
@@ -714,7 +820,6 @@ export default function LaberintoCorporativo() {
     
     setWin(true);
     
-    // Subir de nivel si corresponde
     if (currentLevel < 3) {
       setTimeout(() => {
         setCurrentLevel(prev => prev + 1);
@@ -744,7 +849,7 @@ export default function LaberintoCorporativo() {
     return `${mins}:${secs < 10 ? '0' + secs : secs}`;
   };
 
-return (
+  return (
     <div
       ref={gameRef}
       tabIndex={0}
@@ -768,6 +873,23 @@ return (
             >
               Ayuda
             </button>
+            <button
+              onClick={() => {
+                const path = findPathToUnvisited();
+                if (path) {
+                  setHints(prev => prev - 1);
+                  setModal({
+                    type: "hint",
+                    path: path,
+                    remaining: hints - 1
+                  });
+                }
+              }}
+              disabled={hints <= 0}
+              className="bg-purple-500 hover:bg-purple-600 text-white px-3 py-1 rounded disabled:opacity-50"
+            >
+              Pista ({hints} restantes)
+            </button>
           </div>
         </div>
         
@@ -782,12 +904,18 @@ return (
             <div className={`font-semibold ${gameState.time < 30 ? 'text-red-600' : 'text-gray-600'}`}>
               ⏱️ {formatTime(gameState.time)}
             </div>
+            {powerUps.speedBoost && (
+              <div className="text-yellow-600 font-bold">⚡ Velocidad</div>
+            )}
+            {powerUps.invincibility && (
+              <div className="text-green-600 font-bold">🛡️ Invencible</div>
+            )}
           </div>
         </div>
       </div>
 
       {/* Contenedor principal del juego */}
-      <div className="flex-1 flex flex-col md:flex-row p-4 gap-4">
+      <div className="flex-1 flex flex-col md:flex-row p-4 gap-4 relative">
         {/* Tablero del laberinto */}
         <div className="flex-1 flex justify-center items-center">
           <div 
@@ -870,6 +998,42 @@ return (
             </ul>
           </div>
         </div>
+
+        {/* Mini-mapa */}
+        <div className="absolute bottom-4 right-4 bg-black bg-opacity-70 p-2 rounded">
+          <div className="grid gap-px" style={{
+            gridTemplateColumns: `repeat(${gameState.size}, 8px)`,
+            gridTemplateRows: `repeat(${gameState.size}, 8px)`
+          }}>
+            {gameState.maze.map((row, rowIndex) => (
+              row.map((cell, colIndex) => {
+                const key = `${rowIndex}-${colIndex}`;
+                const isExplored = explored.has(key);
+                const isPlayer = gameState.playerPos.row === rowIndex && 
+                                gameState.playerPos.col === colIndex;
+                
+                let color = 'bg-gray-900'; // No explorado
+                if (isExplored) {
+                  if (cell === "WALL") color = 'bg-gray-600';
+                  else if (cell === "PATH") color = 'bg-gray-300';
+                  else if (cell === "START") color = 'bg-green-500';
+                  else if (cell === "GOAL") color = 'bg-pink-500';
+                  else if (gameState.specialCells[key]) {
+                    color = 'bg-blue-400'; // Departamentos
+                  }
+                }
+                
+                return (
+                  <div 
+                    key={key}
+                    className={`w-2 h-2 ${color} ${isPlayer ? 'border border-yellow-400' : ''}`}
+                    title={`${rowIndex},${colIndex}`}
+                  />
+                );
+              })
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Modales */}
@@ -907,6 +1071,30 @@ return (
             {modal.type === "bonus" && (
               <>
                 <h3 className="text-xl font-bold mb-2">¡Bonus encontrado!</h3>
+                <p className="text-lg text-center py-4">{modal.message}</p>
+              </>
+            )}
+            
+            {modal.type === "hint" && (
+              <>
+                <h3 className="text-xl font-bold mb-2">Pista ({modal.remaining} restantes)</h3>
+                <p className="mb-2">Siguientes pasos recomendados:</p>
+                <div className="flex space-x-2">
+                  {modal.path.map((step, i) => (
+                    <div key={i} className="bg-blue-100 p-2 rounded">
+                      Fila: {step.row + 1}, Col: {step.col + 1}
+                    </div>
+                  ))}
+                </div>
+                <p className="mt-4 text-sm text-gray-600">
+                  Las pistas muestran el camino más corto a un departamento no visitado.
+                </p>
+              </>
+            )}
+            
+            {modal.type === "goalWarning" && (
+              <>
+                <h3 className="text-xl font-bold mb-2 text-red-600">¡Atención!</h3>
                 <p className="text-lg text-center py-4">{modal.message}</p>
               </>
             )}
@@ -971,6 +1159,14 @@ return (
                   <li><strong>Departamentos visitados:</strong> +100 puntos cada uno</li>
                 </ul>
               </div>
+              
+              <div>
+                <h3 className="text-lg font-semibold">Power-ups</h3>
+                <ul className="list-disc pl-5 space-y-1">
+                  <li><strong>⚡ Velocidad:</strong> Te mueves el doble de rápido por 10 segundos</li>
+                  <li><strong>🛡️ Invencibilidad:</strong> Los enemigos no te afectan por 10 segundos</li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
@@ -985,7 +1181,12 @@ return (
             <p className="mb-4">Puntuación final: {gameState.score} puntos</p>
             
             {currentLevel < 3 ? (
-              <p className="mb-4">Preparando nivel {currentLevel + 1}...</p>
+              <>
+                <p className="mb-4">Preparando nivel {currentLevel + 1}...</p>
+                <div className="animate-pulse">
+                  <p>Dificultad aumentada: {difficulty === 'normal' ? 'Normal' : 'Difícil'}</p>
+                </div>
+              </>
             ) : (
               <p className="mb-4">¡Has completado todos los niveles!</p>
             )}
