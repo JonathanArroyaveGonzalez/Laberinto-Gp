@@ -5,6 +5,20 @@ import LaberintoAprendizaje from './pages/Learning.jsx';
 function App() {
   const [currentView, setCurrentView] = useState('home'); // 'home', 'monopoly', 'learning'
 
+  const Header = () => (
+    <div className="p-4 bg-white shadow-md flex justify-between items-center">
+      <h1 className="text-2xl font-bold text-gray-800">Explorador Gestion Organizacional</h1>
+      {currentView !== 'home' && (
+        <button 
+          className="bg-gray-800 hover:bg-gray-900 text-white font-medium py-3 px-6 rounded-full shadow-lg transition-all duration-300"
+          onClick={() => setCurrentView('home')}
+        >
+          Volver al inicio
+        </button>
+      )}
+    </div>
+  );
+
   const HomePage = () => (
     <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-6">
       <div className="text-center mb-12">
@@ -52,18 +66,10 @@ function App() {
 
   return (
     <div className="relative min-h-screen">
+      <Header />
       {currentView === 'home' && <HomePage />}
       {currentView === 'monopoly' && <LaberintoCorporativo />}
       {currentView === 'learning' && <LaberintoAprendizaje />}
-      
-      {currentView !== 'home' && (
-        <button 
-          className="fixed bottom-8 left-1/2 transform -translate-x-1/2 bg-gray-800 hover:bg-gray-900 text-white font-medium py-3 px-6 rounded-full shadow-lg transition-all duration-300 z-50"
-          onClick={() => setCurrentView('home')}
-        >
-          Volver al inicio
-        </button>
-      )}
     </div>
   );
 }
