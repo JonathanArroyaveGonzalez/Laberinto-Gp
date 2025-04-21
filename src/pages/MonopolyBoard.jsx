@@ -1,4 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
+import playerGif from "../assets/player.gif";
+import enemyGif from "../assets/enemy.gif";
 
 const SPECIAL_TOPICS = {
   ESTRUCTURA: "Estructura organizacional del proyecto",
@@ -27,11 +29,11 @@ const categories = {
 };
 
 const EMOJIS = {
-  PLAYER: "🧑‍💼",
+  PLAYER: <img src={playerGif} alt="Player" className="w-full h-full object-contain" />,
   START: "🚩",
   GOAL: "🏆",
-  ENEMY: "⚠️",
-  RESOURCE: "💼"
+  ENEMY: <img src={enemyGif} alt="Enemy" className="w-full h-full object-contain" />,
+  RESOURCE: "🃏"
 };
 
 const SVGs = {
@@ -208,6 +210,25 @@ const CHALLENGES = {
   ]
 };
 
+const ensureGoalAccessibility = (maze, size) => {
+  const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+  const goalRow = size - 1;
+  const goalCol = size - 1;
+
+  directions.forEach(([dr, dc]) => {
+    const newRow = goalRow + dr;
+    const newCol = goalCol + dc;
+
+    if (
+      newRow >= 0 && newRow < size &&
+      newCol >= 0 && newCol < size &&
+      maze[newRow][newCol] === "WALL"
+    ) {
+      maze[newRow][newCol] = "PATH"; // Asegurar que haya un camino hacia la meta
+    }
+  });
+};
+
 const generateMaze = (difficulty = 'normal') => {
   const sizes = {
     'easy': 6,
@@ -332,6 +353,8 @@ const generateMaze = (difficulty = 'normal') => {
   // Asegurar entrada y salida
   maze[0][0] = "START";
   maze[size-1][size-1] = "GOAL";
+
+  ensureGoalAccessibility(maze, size); // Asegurar que la meta sea accesible
   
   return { maze, specialCells, resources, enemies, size };
 };
@@ -814,11 +837,24 @@ useEffect(() => {
 
     setGameState(prev => ({
       ...prev,
-      score: Math.min(5.0, topicsBonus + timeBonus) // Limitar el puntaje máximo a 5.0
+      score: Math.max(1.0, Math.min(5.0, topicsBonus + timeBonus)) // Asegurar puntaje entre 1.0 y 5.0
     }));
 
     setWin(true);
   };
+
+  const handleModalTimeout = () => {
+    if (modal) {
+      setModal(null); // Asegurar que el modal se cierre correctamente
+    }
+  };
+
+  useEffect(() => {
+    if (modal) {
+      const timeout = setTimeout(handleModalTimeout, 5000); // Cerrar modal después de 5 segundos
+      return () => clearTimeout(timeout);
+    }
+  }, [modal]);
 
   const resetGame = () => {
     startNewGame();
@@ -885,7 +921,7 @@ useEffect(() => {
           </div>
           <div className="flex items-center space-x-4">
             <div className="text-red-500 font-bold">
-              {"❤️".repeat(gameState.lives)}{"🖤".repeat(3 - gameState.lives)}
+              {"❤️".repeat(Math.max(0, gameState.lives))}{"🖤".repeat(Math.max(0, 3 - gameState.lives))}
             </div>
             <div className={`font-semibold ${gameState.time < 30 ? 'text-red-600' : 'text-gray-600'}`}>
               ⏱️ {formatTime(gameState.time)}
@@ -1116,11 +1152,17 @@ useEffect(() => {
               <div>
                 <h3 className="text-lg font-semibold">Elementos del juego</h3>
                 <ul className="list-disc pl-5 space-y-1">
-                  <li><strong>🧑‍💼</strong> - Tu personaje</li>
+                  <li>
+                      <img src={playerGif} alt="Enemy" className="inline w-6 h-6 align-middle mr-1" />
+                              - Tu personaje
+                  </li>
                   <li><strong>🚩</strong> - Punto de inicio</li>
                   <li><strong>🏆</strong> - Meta final</li>
-                  <li><strong>⚠️</strong> - Obstáculos/Enemigos (te quitan vidas)</li>
-                  <li><strong>💼</strong> - Recursos bonus (dan puntos, tiempo o vidas extra)</li>
+                  <li>
+                      <img src={enemyGif} alt="Enemy" className="inline w-6 h-6 align-middle mr-1" />
+                              - Tu personaje
+                  </li>
+                  <li><strong>🃏</strong> - Recursos bonus (dan puntos, tiempo o vidas extra)</li>
                   <li><strong>Íconos de departamentos</strong> - Desafíos por superar</li>
                 </ul>
               </div>
@@ -1222,7 +1264,7 @@ useEffect(() => {
           <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4 text-center">
             <h2 className="text-3xl font-bold mb-4">Juego en pausa</h2>
             <p className="mb-4">Tiempo restante: {formatTime(gameState.time)}</p>
-            <p className="mb-4">Vidas: {"❤️".repeat(gameState.lives)}{"🖤".repeat(3 - gameState.lives)}</p>
+            <p className="mb-4">Vidas: {"❤️".repeat(Math.max(0, gameState.lives))}{"🖤".repeat(Math.max(0, 3 - gameState.lives))}</p>
             <p className="mb-4">Puntos: {gameState.score}</p>
             
             <button
@@ -1237,3 +1279,4 @@ useEffect(() => {
     </div>
   );
 }
+
