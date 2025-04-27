@@ -3,7 +3,7 @@ import playerGif from "../assets/player.gif";
 import enemyGif from "../assets/enemy.gif";
 import finanzasGif from "../assets/finanzas.gif";
 
-const playername = localStorage.getItem("laberinto_player_name") || "Player";
+let playername = localStorage.getItem("laberinto_player_name");
 
 const SPECIAL_TOPICS = {
   ESTRUCTURA: "Estructura organizacional del proyecto",
