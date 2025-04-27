@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const ModoAprendizajeExploratorio = () => {
   // Estructura de conocimiento mejorada con ejemplos y relaciones
@@ -804,26 +804,49 @@ const ModoAprendizajeExploratorio = () => {
     }
   };
 
-  // Estado del explorador
-  const [currentArea, setCurrentArea] = useState(null);
-  const [currentSubtheme, setCurrentSubtheme] = useState(null);
-  const [explorationPath, setExplorationPath] = useState([]);
-  const [viewMode, setViewMode] = useState('areas'); // 'areas' | 'subthemes' | 'detail'
-  const [activeDetailTab, setActiveDetailTab] = useState('content'); // 'content' | 'examples' | 'relationships' | 'application'
+    // Estado del explorador mejorado
+    const [currentArea, setCurrentArea] = useState(null);
+    const [currentSubtheme, setCurrentSubtheme] = useState(null);
+    const [exploredTopics, setExploredTopics] = useState(new Set());
+    const [viewMode, setViewMode] = useState('areas');
+    const [activeDetailTab, setActiveDetailTab] = useState('content');
+    const [showCompletionModal, setShowCompletionModal] = useState(false);
 
-  // Navegación
+    // Efecto para marcar temas como explorados
+  useEffect(() => {
+    if (currentArea && currentSubtheme) {
+      const topicId = `${currentArea}.${currentSubtheme}`;
+      setExploredTopics(prev => new Set(prev).add(topicId));
+    } else if (currentArea) {
+      const topicId = `${currentArea}`;
+      setExploredTopics(prev => new Set(prev).add(topicId));
+    }
+  }, [currentArea, currentSubtheme]);
+
+  // Calcular el progreso
+  const calculateProgress = () => {
+    const totalTopics = Object.keys(KNOWLEDGE_MAP).length + 
+      Object.keys(KNOWLEDGE_MAP).reduce((acc, area) => 
+        acc + Object.keys(KNOWLEDGE_MAP[area].subtemas).length, 0);
+    
+    return {
+      explored: exploredTopics.size,
+      total: totalTopics,
+      percentage: Math.round((exploredTopics.size / totalTopics) * 100)
+    };
+  };
+
+  // Navegación mejorada
   const enterArea = (area) => {
     setCurrentArea(area);
     setCurrentSubtheme(null);
     setViewMode('subthemes');
-    setExplorationPath([...explorationPath, area]);
   };
 
   const enterSubtheme = (subtheme) => {
     setCurrentSubtheme(subtheme);
     setViewMode('detail');
     setActiveDetailTab('content');
-    setExplorationPath([...explorationPath, subtheme]);
   };
 
   const goBack = () => {
@@ -834,7 +857,6 @@ const ModoAprendizajeExploratorio = () => {
       setViewMode('areas');
       setCurrentArea(null);
     }
-    setExplorationPath(explorationPath.slice(0, -1));
   };
 
   const navigateToRelatedTopic = (relation) => {
@@ -843,15 +865,20 @@ const ModoAprendizajeExploratorio = () => {
     setCurrentSubtheme(relatedSubtheme);
     setViewMode('detail');
     setActiveDetailTab('content');
-    setExplorationPath([...explorationPath, relatedArea, relatedSubtheme]);
   };
 
-  // Calcular el total de conceptos para la barra de progreso
-  const calculateTotalConcepts = () => {
-    return Object.keys(KNOWLEDGE_MAP).length + 
-      Object.keys(KNOWLEDGE_MAP).reduce((acc, area) => 
-        acc + Object.keys(KNOWLEDGE_MAP[area].subtemas).length, 0);
+  const continueExploring = () => {
+    setViewMode('areas');
+    setCurrentArea(null);
+    setCurrentSubtheme(null);
   };
+
+  // Verificar si se completó todo el contenido
+  const progress = calculateProgress();
+  if (progress.percentage === 100 && !showCompletionModal) {
+    setShowCompletionModal(true);
+  }
+
 
   // Componente de visualización de áreas principales
   const AreasView = () => (
@@ -859,51 +886,75 @@ const ModoAprendizajeExploratorio = () => {
       {Object.keys(KNOWLEDGE_MAP).map((areaKey) => (
         <div 
           key={areaKey}
-          style={styles.areaCard}
+          style={{
+            ...styles.areaCard,
+            ...(exploredTopics.has(areaKey) ? styles.exploredCard : {})
+          }}
           onClick={() => enterArea(areaKey)}
         >
           <div style={styles.areaIcon}>{KNOWLEDGE_MAP[areaKey].icon}</div>
           <h3 style={styles.areaTitle}>{KNOWLEDGE_MAP[areaKey].title}</h3>
           <p style={styles.areaDescription}>{KNOWLEDGE_MAP[areaKey].description}</p>
           <div style={styles.discoveryBadge}>
-            {Object.keys(KNOWLEDGE_MAP[areaKey].subtemas).length} subtemas por explorar
+            {Object.keys(KNOWLEDGE_MAP[areaKey].subtemas).length} subtemas
           </div>
+          {exploredTopics.has(areaKey) && (
+            <div style={styles.completionBadge}>Explorado</div>
+          )}
         </div>
       ))}
     </div>
   );
-
   // Componente de visualización de subtemas
   const SubthemesView = () => (
     <div style={styles.subthemesContainer}>
-      <h2 style={styles.sectionTitle}>{KNOWLEDGE_MAP[currentArea].title}</h2>
+      <div style={styles.sectionHeader}>
+        <h2 style={styles.sectionTitle}>{KNOWLEDGE_MAP[currentArea].title}</h2>
+        <button 
+          style={styles.continueButton}
+          onClick={continueExploring}
+        >
+          Continuar explorando
+        </button>
+      </div>
       <p style={styles.areaDescription}>{KNOWLEDGE_MAP[currentArea].description}</p>
       
       <div style={styles.subthemesGrid}>
-        {Object.keys(KNOWLEDGE_MAP[currentArea].subtemas).map((subthemeKey) => (
-          <div
-            key={subthemeKey}
-            style={styles.subthemeCard}
-            onClick={() => enterSubtheme(subthemeKey)}
-          >
-            <h4 style={styles.subthemeTitle}>{KNOWLEDGE_MAP[currentArea].subtemas[subthemeKey].title}</h4>
-            <ul style={styles.subthemeList}>
-              {KNOWLEDGE_MAP[currentArea].subtemas[subthemeKey].content.map((item, index) => (
-                <li key={index} style={styles.subthemeListItem}>{item}</li>
-              ))}
-            </ul>
-            {KNOWLEDGE_MAP[currentArea].subtemas[subthemeKey].examples && (
-              <div style={styles.previewBadge}>
-                <span style={styles.previewIcon}>📋</span> {KNOWLEDGE_MAP[currentArea].subtemas[subthemeKey].examples.length} ejemplos
+        {Object.keys(KNOWLEDGE_MAP[currentArea].subtemas).map((subthemeKey) => {
+          const isExplored = exploredTopics.has(`${currentArea}.${subthemeKey}`);
+          return (
+            <div
+              key={subthemeKey}
+              style={{
+                ...styles.subthemeCard,
+                ...(isExplored ? styles.exploredCard : {})
+              }}
+              onClick={() => enterSubtheme(subthemeKey)}
+            >
+              <h4 style={styles.subthemeTitle}>{KNOWLEDGE_MAP[currentArea].subtemas[subthemeKey].title}</h4>
+              <ul style={styles.subthemeList}>
+                {KNOWLEDGE_MAP[currentArea].subtemas[subthemeKey].content.slice(0, 2).map((item, index) => (
+                  <li key={index} style={styles.subthemeListItem}>{item}</li>
+                ))}
+              </ul>
+              {isExplored && (
+                <div style={styles.completionBadge}>Completado</div>
+              )}
+              <div style={styles.cardFooter}>
+                {KNOWLEDGE_MAP[currentArea].subtemas[subthemeKey].examples && (
+                  <span style={styles.previewBadge}>
+                    <span style={styles.previewIcon}>📋</span> {KNOWLEDGE_MAP[currentArea].subtemas[subthemeKey].examples.length} ejemplos
+                  </span>
+                )}
+                {KNOWLEDGE_MAP[currentArea].subtemas[subthemeKey].relationships && (
+                  <span style={styles.previewBadge}>
+                    <span style={styles.previewIcon}>🔄</span> {KNOWLEDGE_MAP[currentArea].subtemas[subthemeKey].relationships.length} relaciones
+                  </span>
+                )}
               </div>
-            )}
-            {KNOWLEDGE_MAP[currentArea].subtemas[subthemeKey].relationships && (
-              <div style={styles.previewBadge}>
-                <span style={styles.previewIcon}>🔄</span> {KNOWLEDGE_MAP[currentArea].subtemas[subthemeKey].relationships.length} relaciones
-              </div>
-            )}
-          </div>
-        ))}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
@@ -911,11 +962,23 @@ const ModoAprendizajeExploratorio = () => {
   // Componente de detalle de subtema
   const DetailView = () => {
     const currentContent = KNOWLEDGE_MAP[currentArea].subtemas[currentSubtheme];
+    const topicId = `${currentArea}.${currentSubtheme}`;
+    const isExplored = exploredTopics.has(topicId);
     
     return (
       <div style={styles.detailView}>
-        <h2 style={styles.sectionTitle}>{KNOWLEDGE_MAP[currentArea].title}</h2>
-        <h3 style={styles.subthemeTitle}>{currentContent.title}</h3>
+        <div style={styles.sectionHeader}>
+          <div>
+            <h2 style={styles.sectionTitle}>{KNOWLEDGE_MAP[currentArea].title}</h2>
+            <h3 style={styles.subthemeTitle}>{currentContent.title}</h3>
+          </div>
+          <button 
+            style={styles.continueButton}
+            onClick={continueExploring}
+          >
+            Continuar explorando
+          </button>
+        </div>
         
         <div style={styles.tabsContainer}>
           <button 
@@ -1082,13 +1145,19 @@ const ModoAprendizajeExploratorio = () => {
             </div>
           </div>
         )}
+      {!isExplored && (
+          <button 
+            style={styles.markCompleteButton}
+            onClick={() => setExploredTopics(prev => new Set(prev).add(topicId))}
+          >
+            ✔ Marcar como completado
+          </button>
+        )}
       </div>
     );
   };
 
-  // Calcular el porcentaje de progreso
-  const progressPercentage = (explorationPath.length / calculateTotalConcepts()) * 100;
-
+  
   // Estilos mejorados
   const styles = {
     exploratoryLearning: {
@@ -1099,7 +1168,8 @@ const ModoAprendizajeExploratorio = () => {
       background: '#f7f9fc',
       borderRadius: '12px',
       boxShadow: '0 8px 30px rgba(0, 0, 0, 0.05)',
-      color: '#333'
+      color: '#333',
+      position: 'relative'
     },
     breadcrumb: {
       display: 'flex',
@@ -1522,104 +1592,144 @@ const ModoAprendizajeExploratorio = () => {
       color: '#7f8c8d',
       fontSize: '14px',
       marginTop: '5px'
+    },
+    // Nuevos estilos añadidos
+    sectionHeader: {
+      display: 'flex',
+      justifyContent: 'space-between',
+      alignItems: 'flex-start',
+      marginBottom: '20px'
+    },
+    continueButton: {
+      background: '#3498db',
+      color: 'white',
+      border: 'none',
+      padding: '10px 15px',
+      borderRadius: '5px',
+      cursor: 'pointer',
+      fontSize: '14px',
+      fontWeight: '500',
+      transition: 'all 0.2s ease',
+      ':hover': {
+        background: '#2980b9'
+      }
+    },
+    markCompleteButton: {
+      background: '#2ecc71',
+      color: 'white',
+      border: 'none',
+      padding: '12px 20px',
+      borderRadius: '5px',
+      cursor: 'pointer',
+      fontSize: '15px',
+      fontWeight: '500',
+      marginTop: '30px',
+      display: 'block',
+      width: '100%',
+      transition: 'all 0.2s ease',
+      ':hover': {
+        background: '#27ae60'
+      }
+    },
+    exploredCard: {
+      borderLeft: '4px solid #2ecc71',
+      background: '#f5fbf7'
+    },
+    completionBadge: {
+      background: '#2ecc71',
+      color: 'white',
+      padding: '4px 8px',
+      borderRadius: '12px',
+      fontSize: '12px',
+      fontWeight: '500',
+      position: 'absolute',
+      top: '10px',
+      right: '10px'
+    },
+    cardFooter: {
+      display: 'flex',
+      gap: '8px',
+      marginTop: '15px',
+      flexWrap: 'wrap'
+    },
+    modalOverlay: {
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      background: 'rgba(0,0,0,0.5)',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      zIndex: 1000
+    },
+    modalContent: {
+      background: 'white',
+      padding: '30px',
+      borderRadius: '12px',
+      maxWidth: '500px',
+      textAlign: 'center',
+      boxShadow: '0 5px 15px rgba(0,0,0,0.3)'
+    },
+    modalTitle: {
+      fontSize: '24px',
+      color: '#2c3e50',
+      marginBottom: '20px'
+    },
+    modalButton: {
+      background: '#3498db',
+      color: 'white',
+      border: 'none',
+      padding: '12px 25px',
+      borderRadius: '5px',
+      cursor: 'pointer',
+      fontSize: '16px',
+      fontWeight: '500',
+      marginTop: '20px',
+      transition: 'all 0.2s ease',
+      ':hover': {
+        background: '#2980b9'
+      }
     }
   };
 
   return (
     <div style={styles.exploratoryLearning}>
-      {/* Breadcrumb navigation */}
-      <div style={styles.breadcrumb}>
-        <button 
-          style={styles.breadcrumbButton} 
-          onClick={() => {
-            setCurrentArea(null);
-            setCurrentSubtheme(null);
-            setViewMode('areas');
-            setExplorationPath([]);
-          }}
-        >
-          Inicio
-        </button>
-        
-        {explorationPath.length > 0 && (
-          <>
-            <span style={styles.breadcrumbSeparator}>›</span>
-            {explorationPath.map((item, index) => (
-              <React.Fragment key={index}>
-                {index > 0 && <span style={styles.breadcrumbSeparator}>›</span>}
-                <button
-                  style={{
-                    ...styles.breadcrumbButton,
-                    ...(index === explorationPath.length - 1 ? styles.breadcrumbButtonCurrent : {})
-                  }}
-                  onClick={() => {
-                    if (index < explorationPath.length - 1) {
-                      const newPath = explorationPath.slice(0, index + 1);
-                      setExplorationPath(newPath);
-                      
-                      if (index % 2 === 0) {
-                        // Es un área
-                        setCurrentArea(newPath[index]);
-                        setCurrentSubtheme(null);
-                        setViewMode('subthemes');
-                      } else {
-                        // Es un subtema
-                        setCurrentArea(newPath[index - 1]);
-                        setCurrentSubtheme(newPath[index]);
-                        setViewMode('detail');
-                      }
-                    }
-                  }}
-                >
-                  {index % 2 === 0 
-                    ? KNOWLEDGE_MAP[item].title 
-                    : KNOWLEDGE_MAP[currentArea].subtemas[item].title}
-                </button>
-              </React.Fragment>
-            ))}
-          </>
-        )}
-      </div>
-
-      {/* Progress bar */}
+      {/* Barra de progreso mejorada */}
       <div style={styles.progressContainer}>
-        <div 
-          style={{
-            ...styles.progressBar,
-            width: `${progressPercentage}%`
-          }} 
-        />
+        <div style={{ ...styles.progressBar, width: `${progress.percentage}%` }} />
       </div>
       <div style={styles.progressText}>
-        {Math.round(progressPercentage)}% completado ({explorationPath.length} de {calculateTotalConcepts()} conceptos explorados)
+        Progreso: {progress.explored} de {progress.total} temas ({progress.percentage}%)
       </div>
 
-      {/* Main content view */}
+      {/* Navegación principal */}
       {viewMode === 'areas' && <AreasView />}
       {viewMode === 'subthemes' && <SubthemesView />}
       {viewMode === 'detail' && <DetailView />}
 
-      {/* Back button when not on areas view */}
+      {/* Botón de retroceso */}
       {viewMode !== 'areas' && (
-        <button 
-          style={{
-            background: '#ecf0f1',
-            border: 'none',
-            padding: '10px 20px',
-            borderRadius: '5px',
-            cursor: 'pointer',
-            marginTop: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            fontSize: '15px',
-            color: '#7f8c8d',
-            transition: 'all 0.2s ease'
-          }}
-          onClick={goBack}
-        >
+        <button style={styles.backButton} onClick={goBack}>
           ← Volver atrás
         </button>
+      )}
+
+      {/* Modal de completado */}
+      {showCompletionModal && (
+        <div style={styles.modalOverlay}>
+          <div style={styles.modalContent}>
+            <h3 style={styles.modalTitle}>¡Felicidades! 🎉</h3>
+            <p>Has completado todos los temas del módulo de aprendizaje.</p>
+            <button 
+              style={styles.modalButton}
+              onClick={() => setShowCompletionModal(false)}
+            >
+              Cerrar
+            </button>
+          </div>
+        </div>
       )}
     </div>
   );

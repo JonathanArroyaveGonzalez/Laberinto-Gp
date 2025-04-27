@@ -1,6 +1,9 @@
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, cloneElement } from "react";
 import playerGif from "../assets/player.gif";
 import enemyGif from "../assets/enemy.gif";
+import finanzasGif from "../assets/finanzas.gif";
+
+const playername = localStorage.getItem("laberinto_player_name") || "Player";
 
 const SPECIAL_TOPICS = {
   ESTRUCTURA: "Estructura organizacional del proyecto",
@@ -39,13 +42,25 @@ const EMOJIS = {
 const SVGs = {
   PRODUCCION: "🏭",
   MERCADEO: "📢",
-  FINANZAS: "💰",
+  FINANZAS: <img src={finanzasGif} alt="Enemy" className="w-full h-full object-contain" />,
   RRHH: "👥",
   ADMIN: "📋",
   COSTOS_ORG: "📊",
   COSTOS_PROC: "📝",
   ESTRUCTURA: "🏗️"
 };
+
+const renderIcon = (icon) => {
+  if (typeof icon === "string") {
+    // Es un emoji
+    return <span className="inline w-6 h-6 align-middle mr-1">{icon}</span>;
+  }
+  // Es JSX (como <img />), lo clonamos para meterle la clase
+  return cloneElement(icon, {
+    className: "inline w-6 h-6 align-middle mr-1"
+  });
+};
+
 
 const CHALLENGES = {
   PRODUCCION: [
@@ -859,6 +874,8 @@ useEffect(() => {
   const resetGame = () => {
     startNewGame();
     setKnowledgeBase({});
+    //localStorage.clear();
+    //window.location.reload(); // Recargar la página para reiniciar el juego
   };
   
   const togglePause = () => {
@@ -1002,7 +1019,8 @@ useEffect(() => {
                 key={topic} 
                 className={`p-2 rounded flex items-center ${gameState.visitedTopics[topic] ? 'bg-green-100' : 'bg-gray-100'}`}
               >
-                <span className="mr-2">{SVGs[topic]}</span>
+                 <span className="mr-2">{renderIcon(SVGs[topic])}</span>
+                
                 <span className="text-sm">
                   {SPECIAL_TOPICS[topic]}
                   {gameState.visitedTopics[topic] && " ✓"}
@@ -1172,7 +1190,7 @@ useEffect(() => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
                   {Object.entries(SPECIAL_TOPICS).map(([key, topic]) => (
                     <div key={key} className="flex items-center p-2 bg-gray-50 rounded">
-                      <span className="mr-2">{SVGs[key]}</span>
+                      <span className="mr-2">{renderIcon(SVGs[key])}</span>
                       <span>{topic}</span>
                     </div>
                   ))}
@@ -1206,9 +1224,9 @@ useEffect(() => {
       {win && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4 text-center">
-            <h2 className="text-3xl font-bold text-green-600 mb-4">¡Felicidades!</h2>
+            <h2 className="text-3xl font-bold text-green-600 mb-4">¡Felicidades {playername}!</h2>
             <p className="text-xl mb-2">Has completado el juego</p>
-            <p className="mb-4">Puntuación final: {gameState.score} puntos</p>
+            <p className="mb-4">Puntuación final: {gameState.score.toFixed(1)} puntos</p>
             
             <button
               onClick={resetGame}
@@ -1218,14 +1236,15 @@ useEffect(() => {
             </button>
           </div>
         </div>
-      )}
+      )  
+      }
       
       {/* Pantalla de game over */}
       {gameOver && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
           <div className="bg-white p-6 rounded-lg max-w-md w-full mx-4 text-center">
-            <h2 className="text-3xl font-bold text-red-600 mb-4">¡Game Over!</h2>
-            <p className="text-xl mb-2">Puntuación final: {gameState.score} puntos</p>
+            <h2 className="text-3xl font-bold text-red-600 mb-4">¡Game Over! {playername}</h2>
+            <p className="text-xl mb-2">Puntuación final: {gameState.score.toFixed(1)} puntos</p>
             <p className="mb-4">Departamentos completados: {Object.keys(gameState.visitedTopics).length}/{Object.keys(SPECIAL_TOPICS).length}</p>
             
             <div className="mt-6">
@@ -1265,7 +1284,7 @@ useEffect(() => {
             <h2 className="text-3xl font-bold mb-4">Juego en pausa</h2>
             <p className="mb-4">Tiempo restante: {formatTime(gameState.time)}</p>
             <p className="mb-4">Vidas: {"❤️".repeat(Math.max(0, gameState.lives))}{"🖤".repeat(Math.max(0, 3 - gameState.lives))}</p>
-            <p className="mb-4">Puntos: {gameState.score}</p>
+            <p className="mb-4">Puntos: {gameState.score.toFixed(1)}</p>
             
             <button
               onClick={togglePause}

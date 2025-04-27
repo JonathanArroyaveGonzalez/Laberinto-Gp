@@ -1,5 +1,6 @@
 // ProyectoEnLlamas.jsx
 import React, { useEffect, useState, useCallback } from "react";
+import PropTypes from "prop-types";
 import { BookOpen, Cog, Users, ShoppingCart, DollarSign, Briefcase, Layers, Grid } from "lucide-react";
 
 // Íconos por tema
@@ -64,7 +65,7 @@ const TOPIC_POSITIONS = [
   [null, null, null, null, null, null, null, null, null]
 ];
 
-const ProyectoEnLlamas = () => {
+const ProyectoEnLlamas = ({ playerName = "Jugador" }) => {
   const rows = MAZE_LAYOUT.length;
   const cols = MAZE_LAYOUT[0].length;
   const cellSize = Math.min(
@@ -194,8 +195,14 @@ const ProyectoEnLlamas = () => {
             <h1 className="text-3xl font-bold text-gray-800">🧩 Laberinto Corporativo</h1>
             <p className="text-gray-600">Modo Aprendizaje - Descubre todos los temas empresariales</p>
           </div>
-          <div className="bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full text-sm font-medium">
-            Descubiertos: {gameState.discoveredTopics}/{Object.keys(SPECIAL_TOPICS).length}
+          <div className="flex flex-col md:flex-row items-center gap-3">
+            <div className="bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium flex items-center">
+              <span className="mr-1">👤</span>
+              <span>{playerName}</span>
+            </div>
+            <div className="bg-indigo-100 text-indigo-800 px-4 py-2 rounded-full text-sm font-medium">
+              Descubiertos: {gameState.discoveredTopics}/{Object.keys(SPECIAL_TOPICS).length}
+            </div>
           </div>
         </div>
         
@@ -389,6 +396,10 @@ const ProyectoEnLlamas = () => {
       )}
     </div>
   );
+};
+
+ProyectoEnLlamas.propTypes = {
+  playerName: PropTypes.string
 };
 
 export default ProyectoEnLlamas;
